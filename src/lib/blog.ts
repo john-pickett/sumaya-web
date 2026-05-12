@@ -9,6 +9,9 @@ export interface PostMeta {
   title: string;
   date: string;
   excerpt: string;
+  seoTitle: string | undefined;
+  seoDescription: string | undefined;
+  keywords: string[];
   tags: string[];
   author: string;
   readingTime: number;
@@ -45,6 +48,9 @@ export function getPost(slug: string): Post | null {
     title: data.title ?? slug,
     date: data.date ? String(data.date) : "",
     excerpt: data.excerpt ?? "",
+    seoTitle: data.seoTitle,
+    seoDescription: data.seoDescription,
+    keywords: data.keywords ?? [],
     tags: data.tags ?? [],
     author: data.author ?? "Sumaya Team",
     readingTime: calcReadingTime(content),
@@ -57,8 +63,18 @@ export function getAllPosts(): PostMeta[] {
     .map((slug) => {
       const post = getPost(slug);
       if (!post) return null;
-      const { content: _content, ...meta } = post;
-      return meta;
+      return {
+        slug: post.slug,
+        title: post.title,
+        date: post.date,
+        excerpt: post.excerpt,
+        seoTitle: post.seoTitle,
+        seoDescription: post.seoDescription,
+        keywords: post.keywords,
+        tags: post.tags,
+        author: post.author,
+        readingTime: post.readingTime,
+      };
     })
     .filter((p): p is PostMeta => p !== null)
     .sort((a, b) => (a.date < b.date ? 1 : -1));
